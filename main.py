@@ -1,3 +1,5 @@
+import os
+
 from proxmoxer import ProxmoxAPI
 
 proxmox = ProxmoxAPI('192.168.100.2:8006', user='root@pam',
@@ -9,18 +11,23 @@ def print_vms():
         print("{0}. {1} => {2}".format(vm['vmid'], vm['name'], vm['status']))
 
 
+
 def create_vm():
     node = proxmox.nodes('my')
     print(node)
-    node.lxc.create(vmid=205,
-                    ostemplate='',
-                    hostname='debian-stretch',
-                    storage='local-lvm',
-                    memory=512,
-                    swap=512,
-                    cores=1,
-                    password='secret',
-                    net0='name=eth0,bridge=vmbr0,ip=192.168.22.1/20,gw=192.168.16.1')
+    node.qemu.create(
+        vmid=332,
+        name="bootstrap",
+        memory=16368,
+        sockets=2,
+        cores=2,
+        storage="local-lvm",
+        onboot=0,
+        ide2="file=iso:iso/CentOS-8.3.2011-aarch64-boot.iso,media=cdrom",
+        scsihw="virtio-scsi-pci",
+        scsi0="file=local-lvm:120",
+        net0="model=virtio,bridge=vmbr0"
+    )
 
 
 # Press the green button in the gutter to run the script.

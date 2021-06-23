@@ -246,6 +246,34 @@ def delete_vms(pool):
         print(f'API failure encountered {e}')
 
 
+def delete_vms(low_id, high_id):
+    node = proxmox.nodes('pve')
+    i = low_id
+    while i <= high_id:
+        node.qemu(i).delete()
+        i += 1
+
+
+def start_vms(low_id, high_id):
+    node = proxmox.nodes('pve')
+    i = low_id
+    while i <= high_id:
+        node.qemu(i).status.start.create()
+        i += 1
+
+
+def shutdown_vms(low_id, high_id):
+    node = proxmox.nodes('pve')
+    i = low_id
+    while i <= high_id:
+        node.qemu(i).status.shutdown.create()
+        i += 1
+
+def print_vms():
+    for vm in proxmox.cluster.resources.get(type='vm'):
+        print("{0}. {1} => {2}".format(vm['vmid'], vm['name'], vm['status']))
+
+
 if __name__ == '__main__':
     app.run(use_reloader=True, port=5000, threaded=True)
 
